@@ -4,3 +4,13 @@ export type User = {
   age: number;
   hobbies: string[];
 };
+
+export type BaseUser = {
+  username: string;
+  age: number;
+  hobbies: string[];
+};
+
+export type Users = {
+  [key: string]: User;
+};

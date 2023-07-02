@@ -6,8 +6,9 @@ const config = {
   target: 'node',
   entry: './src/index.ts',
   output: {
-    filename: '[name].[contenthash].js',
-    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'build'),
+    clean: true,
   },
   devServer: {
     open: true,

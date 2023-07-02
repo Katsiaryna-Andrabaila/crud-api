@@ -5,6 +5,6 @@ module.exports = {
   devtool: 'inline-source-map',
   devServer: {
     open: false,
-    contentBase: path.resolve(__dirname, '../dist'),
+    contentBase: path.resolve(__dirname, '../build'),
   },
 };

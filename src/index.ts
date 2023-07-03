@@ -12,7 +12,7 @@ const port = process.env.PORT;
 
 const server = http.createServer(async (req: Request, res: Response) => {
   try {
-    if ((req.url === '/users' || req.url === '/users/') && req.method === 'GET') {
+    if ((req.url === '/api/users' || req.url === '/api/users/') && req.method === 'GET') {
       const users = await getUsers();
 
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -31,7 +31,7 @@ const server = http.createServer(async (req: Request, res: Response) => {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ message: ERROR_MESSAGES.invalidId }));
       }
-    } else if ((req.url === '/users' || req.url === '/users/') && req.method === 'POST') {
+    } else if ((req.url === '/api/users' || req.url === '/api/users/') && req.method === 'POST') {
       const body = await getBody(req);
       const newUser = await createUser(JSON.parse(body));
 

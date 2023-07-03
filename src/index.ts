@@ -1,4 +1,7 @@
 import { Request, Response } from 'express';
+import { createUser, deleteUser, getUserById, getUsers, updateUser } from './controllers';
+import { getBody, isBodyValid } from './utils';
+import { URL_REG_EXP, UUID_REG_EXP } from './constants';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -7,9 +10,79 @@ const http = require('http');
 const hostname = '127.0.0.1';
 const port = process.env.PORT;
 
-const server = http.createServer((_req: Request, res: Response) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Hello World');
+const server = http.createServer(async (req: Request, res: Response) => {
+  try {
+    if ((req.url === '/users' || req.url === '/users/') && req.method === 'GET') {
+      const users = await getUsers();
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(users));
+    } else if (req.url.match(URL_REG_EXP) && req.method === 'GET') {
+      const id = req.url.split('/')[2];
+      const user = await getUserById(id);
+
+      if (user) {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(user));
+      } else if (id.match(UUID_REG_EXP)) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'User not found' }));
+      } else {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'User ID is not valid (not UUID)' }));
+      }
+    } else if ((req.url === '/users' || req.url === '/users/') && req.method === 'POST') {
+      const body = await getBody(req);
+      const newUser = await createUser(JSON.parse(body));
+
+      if (isBodyValid(newUser)) {
+        res.writeHead(201, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(newUser));
+      } else {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'Fields required in valid format' }));
+      }
+    } else if (req.url.match(URL_REG_EXP) && req.method === 'PUT') {
+      const id = req.url.split('/')[2];
+
+      const updatedUser = await getUserById(id);
+
+      if (updatedUser) {
+        const body = await getBody(req);
+        const result = await updateUser(id, JSON.parse(body));
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+
+        res.end(JSON.stringify(result));
+      } else if (id.match(UUID_REG_EXP)) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'User not found' }));
+      } else {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'User ID is not valid (not UUID)' }));
+      }
+    } else if (req.url.match(URL_REG_EXP) && req.method === 'DELETE') {
+      const id = req.url.split('/')[2];
+
+      const deletedUser = await deleteUser(id);
+
+      if (deletedUser) {
+        res.writeHead(204, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ deletedUser }));
+      } else if (id.match(UUID_REG_EXP)) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'User not found' }));
+      } else {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'User ID is not valid (not UUID)' }));
+      }
+    } else {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ message: 'Route not found' }));
+    }
+  } catch (e) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ message: (e as Error).message }));
+  }
 });
 
 server.listen(port, hostname, () => {

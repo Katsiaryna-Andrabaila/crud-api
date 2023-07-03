@@ -1,36 +1,32 @@
-import { db } from '../db';
-import { BaseUser, User } from '../types';
-import { randomUUID } from 'crypto';
+import { Request } from 'express';
+import { BaseUser } from '../types';
 
-export const getUsers = async () => Object.values(db);
+export const getBody = (req: Request): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    try {
+      let body = '';
 
-export const getUserById = async (id: string) => db[id];
+      req.on('data', (chunk) => {
+        body += chunk.toString();
+      });
 
-export const createUser = async (newItem: BaseUser) => {
-  const id = randomUUID();
-
-  db[id] = {
-    id,
-    ...newItem,
-  };
-  return db[id];
+      req.on('end', () => {
+        resolve(body);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
 };
 
-export const update = async (id: string, updatedUser: BaseUser) => {
-  const item = await getUserById(id);
+export const isBodyValid = (body: BaseUser) => {
+  const { username, age, hobbies } = body;
 
-  if (!item) {
-    return null;
-  }
-  db[id] = { id, ...updatedUser };
-  return db[id];
-};
+  const allFields = username && (age || age === 0) && hobbies;
 
-export const deleteUser = async (id: string) => {
-  const item = await getUserById(id);
+  const isNameValid = typeof username === 'string';
+  const isAgeValid = typeof age === 'number' && age >= 0;
+  const areHobbiesValid = Array.isArray(hobbies) && hobbies.every((item) => typeof item === 'string');
 
-  if (!item) {
-    return null;
-  }
-  delete db[id];
+  return allFields && isNameValid && isAgeValid && areHobbiesValid;
 };

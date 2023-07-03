@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { createUser, deleteUser, getUserById, getUsers, updateUser } from './controllers';
 import { getBody, isBodyValid } from './utils';
-import { URL_REG_EXP, UUID_REG_EXP } from './constants';
+import { ERROR_MESSAGES, URL_REG_EXP, UUID_REG_EXP } from './constants';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -26,10 +26,10 @@ const server = http.createServer(async (req: Request, res: Response) => {
         res.end(JSON.stringify(user));
       } else if (id.match(UUID_REG_EXP)) {
         res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'User not found' }));
+        res.end(JSON.stringify({ message: ERROR_MESSAGES.userNotFound }));
       } else {
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'User ID is not valid (not UUID)' }));
+        res.end(JSON.stringify({ message: ERROR_MESSAGES.invalidId }));
       }
     } else if ((req.url === '/users' || req.url === '/users/') && req.method === 'POST') {
       const body = await getBody(req);
@@ -40,7 +40,7 @@ const server = http.createServer(async (req: Request, res: Response) => {
         res.end(JSON.stringify(newUser));
       } else {
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'Fields required in valid format' }));
+        res.end(JSON.stringify({ message: ERROR_MESSAGES.invalidFields }));
       }
     } else if (req.url.match(URL_REG_EXP) && req.method === 'PUT') {
       const id = req.url.split('/')[2];
@@ -55,10 +55,10 @@ const server = http.createServer(async (req: Request, res: Response) => {
         res.end(JSON.stringify(result));
       } else if (id.match(UUID_REG_EXP)) {
         res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'User not found' }));
+        res.end(JSON.stringify({ message: ERROR_MESSAGES.userNotFound }));
       } else {
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'User ID is not valid (not UUID)' }));
+        res.end(JSON.stringify({ message: ERROR_MESSAGES.invalidId }));
       }
     } else if (req.url.match(URL_REG_EXP) && req.method === 'DELETE') {
       const id = req.url.split('/')[2];
@@ -70,18 +70,22 @@ const server = http.createServer(async (req: Request, res: Response) => {
         res.end(JSON.stringify({ deletedUser }));
       } else if (id.match(UUID_REG_EXP)) {
         res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'User not found' }));
+        res.end(JSON.stringify({ message: ERROR_MESSAGES.userNotFound }));
       } else {
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'User ID is not valid (not UUID)' }));
+        res.end(JSON.stringify({ message: ERROR_MESSAGES.invalidId }));
       }
     } else {
       res.writeHead(404, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ message: 'Route not found' }));
+      res.end(JSON.stringify({ message: ERROR_MESSAGES.pageNotFound }));
     }
   } catch (e) {
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ message: (e as Error).message }));
+    res.end(
+      JSON.stringify({
+        message: `${(e as Error).message} ${ERROR_MESSAGES.server}`,
+      })
+    );
   }
 });
 

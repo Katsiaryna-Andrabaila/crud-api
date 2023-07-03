@@ -10,7 +10,7 @@ const http = require('http');
 const hostname = '127.0.0.1';
 const port = process.env.PORT;
 
-const server = http.createServer(async (req: Request, res: Response) => {
+export const server = http.createServer(async (req: Request, res: Response) => {
   try {
     if ((req.url === '/api/users' || req.url === '/api/users/') && req.method === 'GET') {
       const users = await getUsers();
@@ -18,7 +18,7 @@ const server = http.createServer(async (req: Request, res: Response) => {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(users));
     } else if (req.url.match(URL_REG_EXP) && req.method === 'GET') {
-      const id = req.url.split('/')[2];
+      const id = req.url.split('/')[3];
       const user = await getUserById(id);
 
       if (user) {
@@ -43,7 +43,7 @@ const server = http.createServer(async (req: Request, res: Response) => {
         res.end(JSON.stringify({ message: ERROR_MESSAGES.invalidFields }));
       }
     } else if (req.url.match(URL_REG_EXP) && req.method === 'PUT') {
-      const id = req.url.split('/')[2];
+      const id = req.url.split('/')[3];
 
       const updatedUser = await getUserById(id);
 
@@ -61,7 +61,7 @@ const server = http.createServer(async (req: Request, res: Response) => {
         res.end(JSON.stringify({ message: ERROR_MESSAGES.invalidId }));
       }
     } else if (req.url.match(URL_REG_EXP) && req.method === 'DELETE') {
-      const id = req.url.split('/')[2];
+      const id = req.url.split('/')[3];
 
       const deletedUser = await deleteUser(id);
 

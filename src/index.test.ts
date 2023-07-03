@@ -98,4 +98,21 @@ describe('crud-spi', () => {
     expect(createFakeUserReq.status).toBe(400);
     expect(createFakeUserReq.body).toEqual({ message: ERROR_MESSAGES.invalidFields });
   });
+
+  test('should perform error while updaring nonexistent user', async () => {
+    const res = await request.get('/api/users');
+    expect(res.status).toBe(200);
+
+    const createReq = await request.post('/api/users').send(JSON.stringify(mockUser));
+    expect(createReq.status).toBe(201);
+
+    const { id } = createReq.body;
+    const userByIdReq = await request.get(`/api/users/${id}`);
+    expect(userByIdReq.status).toBe(200);
+    expect(userByIdReq.body).toEqual({ id, ...mockUser });
+
+    const updateReq = await request.put(`/api/users/${fakeUuid}`).send(JSON.stringify({ id, ...updatedUser }));
+    expect(updateReq.status).toBe(404);
+    expect(updateReq.body).toEqual({ message: ERROR_MESSAGES.userNotFound });
+  });
 });

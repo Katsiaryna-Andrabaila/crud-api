@@ -8,7 +8,7 @@
 2. Clone this repo: `https://github.com/Katsiaryna-Andrabaila/crud-api`
 3. Go to develop branch: `git checkout develop`
 4. Install dependencies: `npm install`
-5. Add file `.env` with to the root directory
+5. Add file `.env` to the root directory
 6. Insert `PORT = 4000` to the `.env` file
 7. The server is started with commands `npm run start:dev` (development mode) or `npm run start:prod` (production mode)
 8. To watch tests use `npm run test`

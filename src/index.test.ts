@@ -1,5 +1,5 @@
 import supertest from 'supertest';
-import { server } from './index';
+import { server } from './serverConfig';
 import { ERROR_MESSAGES } from './constants';
 
 const mockUser = {

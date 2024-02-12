@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "lib": ["ES2022"],
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
-    "module": "CommonJS",
-    "target": "es6",
+    "module": "ESNext",
+    "target": "ES2022",
     "esModuleInterop": true,
     "allowJs": true,
     "strict": true,
@@ -11,6 +12,10 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "outDir": "build"
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
   },
   "files": ["src/index.ts"],
   "lib": ["es2022"]

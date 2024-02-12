@@ -99,7 +99,7 @@ describe('crud-spi', () => {
     expect(createFakeUserReq.body).toEqual({ message: ERROR_MESSAGES.invalidFields });
   });
 
-  test('should perform error while updaring nonexistent user', async () => {
+  test('should perform error while updating nonexistent user', async () => {
     const res = await request.get('/api/users');
     expect(res.status).toBe(200);
 

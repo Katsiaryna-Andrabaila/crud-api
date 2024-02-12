@@ -1,7 +1,7 @@
-import { Request } from 'express';
 import { BaseUser } from '../types';
+import { IncomingMessage } from 'node:http';
 
-export const getBody = (req: Request): Promise<string> => {
+export const getBody = (req: IncomingMessage): Promise<string> => {
   return new Promise((resolve, reject) => {
     try {
       let body = '';

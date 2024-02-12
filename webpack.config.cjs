@@ -6,7 +6,7 @@ const config = {
   target: 'node',
   entry: './src/index.ts',
   output: {
-    filename: 'bundle.js',
+    filename: 'bundle.cjs',
     path: path.resolve(__dirname, 'build'),
     clean: true,
   },
